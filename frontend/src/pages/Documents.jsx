@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { documentAPI } from '../services/api';
 import Loading from '../components/Loading';
+import { useAuth } from '../context/AuthContext';
 
 const Documents = () => {
+  const { user, customer } = useAuth();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -13,8 +15,13 @@ const Documents = () => {
   });
 
   useEffect(() => {
-    fetchDocuments();
-  }, []);
+    // Only fetch documents if user has a customer profile
+    if (customer) {
+      fetchDocuments();
+    } else {
+      setLoading(false);
+    }
+  }, [customer]);
 
   const fetchDocuments = async () => {
     try {
@@ -22,6 +29,10 @@ const Documents = () => {
       setDocuments(response.data.documents);
     } catch (error) {
       console.error('Failed to fetch documents:', error);
+      setMessage({
+        type: 'error',
+        text: 'Failed to fetch documents. Please try again.',
+      });
     } finally {
       setLoading(false);
     }
@@ -195,6 +206,49 @@ const Documents = () => {
 
   if (loading) {
     return <Loading />;
+  }
+
+  // Show message for admin users without customer profiles
+  if (!customer) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Document Management Not Available
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {user?.role === 'admin' 
+                ? 'Admin users do not have customer profiles and cannot manage documents directly. Please use the Admin Dashboard to manage documents for customers.'
+                : 'You need to complete your profile setup to access document management.'}
+            </p>
+            {user?.role === 'admin' ? (
+              <a
+                href="/admin/dashboard"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Go to Admin Dashboard
+              </a>
+            ) : (
+              <a
+                href="/profile"
+                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition shadow-lg hover:shadow-xl"
+              >
+                Complete Profile Setup
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
