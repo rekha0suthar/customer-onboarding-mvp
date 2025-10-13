@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data.user);
       setCustomer(response.data.customer);
     } catch (error) {
-      console.error('Failed to fetch profile:', error);
+      console.error('Failed to fetch profile:', error.response?.status, error.message);
       logout();
     } finally {
       setLoading(false);

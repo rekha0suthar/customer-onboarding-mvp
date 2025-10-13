@@ -19,10 +19,16 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Customer Onboarding API is running' });
 });
 
-// API Routes (will be added in next steps)
+// API Routes with logging
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/customers', require('./routes/customer.routes'));
 app.use('/api/documents', require('./routes/document.routes'));
+
+// Log all requests for debugging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 // 404 Handler
 app.use((req, res) => {
