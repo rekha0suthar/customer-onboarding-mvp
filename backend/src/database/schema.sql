@@ -1,11 +1,17 @@
 -- Customer Onboarding Database Schema
 
+-- Drop existing role type if it exists (for clean migrations)
+DROP TYPE IF EXISTS user_role CASCADE;
+
+-- Create role enum type
+CREATE TYPE user_role AS ENUM ('broker', 'admin');
+
 -- Users table (for authentication)
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(50) DEFAULT 'customer',
+    role user_role NOT NULL DEFAULT 'broker',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

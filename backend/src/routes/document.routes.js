@@ -2,13 +2,13 @@ import express from 'express';
 import { body } from 'express-validator';
 import documentController from '../controllers/document.controller.js';
 import validate from '../middleware/validation.middleware.js';
-import { authenticateToken } from '../middleware/auth.middleware.js';
+import { requireAuth } from '../middleware/rbac.middleware.js';
 import upload from '../middleware/upload.middleware.js';
 
 const router = express.Router();
 
 // All routes require authentication
-router.use(authenticateToken);
+router.use(requireAuth);
 
 // Upload document
 router.post(

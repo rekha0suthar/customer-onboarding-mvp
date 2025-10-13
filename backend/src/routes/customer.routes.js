@@ -2,12 +2,12 @@ import express from 'express';
 import { body } from 'express-validator';
 import customerController from '../controllers/customer.controller.js';
 import validate from '../middleware/validation.middleware.js';
-import { authenticateToken } from '../middleware/auth.middleware.js';
+import { requireAuth } from '../middleware/rbac.middleware.js';
 
 const router = express.Router();
 
 // All routes require authentication
-router.use(authenticateToken);
+router.use(requireAuth);
 
 // Get customer profile
 router.get('/profile', customerController.getProfile);

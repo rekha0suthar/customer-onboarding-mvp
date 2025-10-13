@@ -31,6 +31,16 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-6">
             {user ? (
               <>
+                {user.role === 'admin' && (
+                  <Link
+                    to="/admin/dashboard"
+                    className={`hover:text-blue-100 transition font-medium ${
+                      isActive('/admin/dashboard') || location.pathname.startsWith('/admin') ? 'text-yellow-300' : ''
+                    }`}
+                  >
+                    🎯 Admin
+                  </Link>
+                )}
                 <Link
                   to="/profile"
                   className={`hover:text-blue-100 transition font-medium ${
@@ -115,6 +125,17 @@ const Navbar = () => {
           <div className="md:hidden py-4 border-t border-blue-400">
             {user ? (
               <div className="space-y-3">
+                {user.role === 'admin' && (
+                  <Link
+                    to="/admin/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`block px-4 py-2 hover:bg-white/10 rounded-lg transition ${
+                      isActive('/admin/dashboard') || location.pathname.startsWith('/admin') ? 'bg-white/20' : ''
+                    }`}
+                  >
+                    🎯 Admin Dashboard
+                  </Link>
+                )}
                 <Link
                   to="/profile"
                   onClick={() => setMobileMenuOpen(false)}

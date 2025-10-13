@@ -2,7 +2,7 @@ import express from 'express';
 import { body } from 'express-validator';
 import authController from '../controllers/auth.controller.js';
 import validate from '../middleware/validation.middleware.js';
-import { authenticateToken } from '../middleware/auth.middleware.js';
+import { requireAuth } from '../middleware/rbac.middleware.js';
 
 const router = express.Router();
 
@@ -38,6 +38,6 @@ router.post(
 );
 
 // Get current user profile
-router.get('/profile', authenticateToken, authController.getProfile);
+router.get('/profile', requireAuth, authController.getProfile);
 
 export default router;

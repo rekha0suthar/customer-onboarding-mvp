@@ -35,10 +35,12 @@ app.use((req, res, next) => {
 import authRoutes from './routes/auth.routes.js';
 import customerRoutes from './routes/customer.routes.js';
 import documentRoutes from './routes/document.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 
 app.use('/api/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/admin', adminRoutes);
 
 // 404 Handler
 app.use((req, res) => {

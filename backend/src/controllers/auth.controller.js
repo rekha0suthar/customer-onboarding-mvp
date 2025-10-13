@@ -16,7 +16,7 @@ class AuthController {
 
       const passwordHash = await hashPassword(password);
 
-      const user = await User.create(email, passwordHash, 'customer');
+      const user = await User.create(email, passwordHash, 'broker');
 
       let customer;
       try {
