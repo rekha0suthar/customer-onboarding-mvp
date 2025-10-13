@@ -1,0 +1,215 @@
+const Document = require('../models/Document.model');
+const Customer = require('../models/Customer.model');
+const OnboardingActivity = require('../models/OnboardingActivity.model');
+const fs = require('fs');
+const path = require('path');
+
+class DocumentController {
+  async uploadDocument(req, res) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      const { document_type } = req.body;
+
+      if (!document_type) {
+        // Clean up uploaded file
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ error: 'Document type is required' });
+      }
+
+      // Get customer
+      const customer = await Customer.findByUserId(req.user.userId);
+      
+      if (!customer) {
+        // Clean up uploaded file
+        fs.unlinkSync(req.file.path);
+        return res.status(404).json({ error: 'Customer profile not found' });
+      }
+
+      // Create document record
+      const document = await Document.create(customer.id, {
+        document_type,
+        document_name: req.file.originalname,
+        file_path: req.file.path,
+        file_size: req.file.size,
+        mime_type: req.file.mimetype,
+      });
+
+      // Log activity
+      await OnboardingActivity.create(
+        customer.id,
+        'DOCUMENT_UPLOAD',
+        `Uploaded document: ${document_type}`
+      );
+
+      res.status(201).json({
+        message: 'Document uploaded successfully',
+        document: {
+          id: document.id,
+          document_type: document.document_type,
+          document_name: document.document_name,
+          file_size: document.file_size,
+          verification_status: document.verification_status,
+          uploaded_at: document.uploaded_at,
+        },
+      });
+    } catch (error) {
+      console.error('Upload document error:', error);
+      
+      // Clean up file if it was uploaded
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      
+      res.status(500).json({ error: 'Failed to upload document', details: error.message });
+    }
+  }
+
+  async getDocuments(req, res) {
+    try {
+      const customer = await Customer.findByUserId(req.user.userId);
+      
+      if (!customer) {
+        return res.status(404).json({ error: 'Customer profile not found' });
+      }
+
+      const documents = await Document.findByCustomerId(customer.id);
+
+      res.json({
+        message: 'Documents retrieved successfully',
+        count: documents.length,
+        documents: documents.map(doc => ({
+          id: doc.id,
+          document_type: doc.document_type,
+          document_name: doc.document_name,
+          file_size: doc.file_size,
+          mime_type: doc.mime_type,
+          verification_status: doc.verification_status,
+          uploaded_at: doc.uploaded_at,
+          verified_at: doc.verified_at,
+          notes: doc.notes,
+        })),
+      });
+    } catch (error) {
+      console.error('Get documents error:', error);
+      res.status(500).json({ error: 'Failed to fetch documents', details: error.message });
+    }
+  }
+
+  async getDocument(req, res) {
+    try {
+      const { id } = req.params;
+      
+      const document = await Document.findById(id);
+      
+      if (!document) {
+        return res.status(404).json({ error: 'Document not found' });
+      }
+
+      // Verify ownership
+      const customer = await Customer.findByUserId(req.user.userId);
+      if (!customer || document.customer_id !== customer.id) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+
+      res.json({
+        message: 'Document retrieved successfully',
+        document: {
+          id: document.id,
+          document_type: document.document_type,
+          document_name: document.document_name,
+          file_size: document.file_size,
+          mime_type: document.mime_type,
+          verification_status: document.verification_status,
+          uploaded_at: document.uploaded_at,
+          verified_at: document.verified_at,
+          notes: document.notes,
+        },
+      });
+    } catch (error) {
+      console.error('Get document error:', error);
+      res.status(500).json({ error: 'Failed to fetch document', details: error.message });
+    }
+  }
+
+  async deleteDocument(req, res) {
+    try {
+      const { id } = req.params;
+      
+      const document = await Document.findById(id);
+      
+      if (!document) {
+        return res.status(404).json({ error: 'Document not found' });
+      }
+
+      // Verify ownership
+      const customer = await Customer.findByUserId(req.user.userId);
+      if (!customer || document.customer_id !== customer.id) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+
+      // Delete file from filesystem
+      if (fs.existsSync(document.file_path)) {
+        fs.unlinkSync(document.file_path);
+      }
+
+      // Delete from database
+      await Document.deleteById(id);
+
+      // Log activity
+      await OnboardingActivity.create(
+        customer.id,
+        'DOCUMENT_DELETE',
+        `Deleted document: ${document.document_type}`
+      );
+
+      res.json({
+        message: 'Document deleted successfully',
+      });
+    } catch (error) {
+      console.error('Delete document error:', error);
+      res.status(500).json({ error: 'Failed to delete document', details: error.message });
+    }
+  }
+
+  async downloadDocument(req, res) {
+    try {
+      const { id } = req.params;
+      
+      const document = await Document.findById(id);
+      
+      if (!document) {
+        return res.status(404).json({ error: 'Document not found' });
+      }
+
+      // Verify ownership
+      const customer = await Customer.findByUserId(req.user.userId);
+      if (!customer || document.customer_id !== customer.id) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+
+      // Check if file exists
+      if (!fs.existsSync(document.file_path)) {
+        return res.status(404).json({ error: 'File not found on server' });
+      }
+
+      // Send file
+      res.download(document.file_path, document.document_name, (err) => {
+        if (err) {
+          console.error('Download error:', err);
+          if (!res.headersSent) {
+            res.status(500).json({ error: 'Failed to download file' });
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Download document error:', error);
+      res.status(500).json({ error: 'Failed to download document', details: error.message });
+    }
+  }
+}
+
+module.exports = new DocumentController();
+
