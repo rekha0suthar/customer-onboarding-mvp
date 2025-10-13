@@ -23,17 +23,50 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
-    const result = await login(formData.email, formData.password);
-
-    if (result.success) {
-      navigate('/dashboard');
-    } else {
-      setError(result.error);
+    // Validate required fields
+    if (!formData.email || !formData.email.trim()) {
+      setError('Email is required');
+      return;
     }
 
-    setLoading(false);
+    // Validate email format
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    if (!formData.password) {
+      setError('Password is required');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const result = await login(formData.email, formData.password);
+
+      if (result.success) {
+        // Role-based redirect
+        if (result.user && result.user.role === 'admin') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

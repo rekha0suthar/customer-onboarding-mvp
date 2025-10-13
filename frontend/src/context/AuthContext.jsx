@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
       setUser(user);
       setCustomer(customer);
       
-      return { success: true };
+      return { success: true, user }; // Return user for role-based redirect
     } catch (error) {
       return {
         success: false,

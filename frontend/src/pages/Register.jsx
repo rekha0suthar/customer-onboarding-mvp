@@ -56,16 +56,66 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
+    // Validate required fields
+    if (!formData.first_name || !formData.first_name.trim()) {
+      setError('First name is required');
+      return;
+    }
+
+    if (!formData.last_name || !formData.last_name.trim()) {
+      setError('Last name is required');
+      return;
+    }
+
+    if (!formData.email || !formData.email.trim()) {
+      setError('Email is required');
+      return;
+    }
+
+    // Validate email format
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    if (!formData.password) {
+      setError('Password is required');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    // Check password strength
+    if (!/(?=.*[a-z])/.test(formData.password)) {
+      setError('Password must contain at least one lowercase letter');
+      return;
+    }
+
+    if (!/(?=.*[A-Z])/.test(formData.password)) {
+      setError('Password must contain at least one uppercase letter');
+      return;
+    }
+
+    if (!/(?=.*\d)/.test(formData.password)) {
+      setError('Password must contain at least one number');
+      return;
+    }
+
+    if (!formData.confirmPassword) {
+      setError('Please confirm your password');
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
+    // Validate GSTIN if provided
     const gstinError = validateGSTIN(formData.gstin);
     if (gstinError) {
       setError(gstinError);
@@ -74,16 +124,20 @@ const Register = () => {
 
     setLoading(true);
 
-    const { confirmPassword, ...registrationData } = formData;
-    const result = await register(registrationData);
+    try {
+      const { confirmPassword, ...registrationData } = formData;
+      const result = await register(registrationData);
 
-    if (result.success) {
-      navigate('/dashboard');
-    } else {
-      setError(result.error);
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

@@ -28,9 +28,43 @@ const Documents = () => {
   };
 
   const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    
+    // Clear previous messages
+    setMessage({ type: '', text: '' });
+    
+    if (!file) {
+      setUploadData({ ...uploadData, file: null });
+      return;
+    }
+    
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      setMessage({ type: 'error', text: 'File size must be less than 5MB' });
+      e.target.value = ''; // Reset file input
+      return;
+    }
+    
+    // Validate file type
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    
+    if (!allowedTypes.includes(file.type)) {
+      setMessage({ type: 'error', text: 'Invalid file type. Only JPEG, PNG, PDF, DOC, and DOCX files are allowed' });
+      e.target.value = ''; // Reset file input
+      return;
+    }
+    
     setUploadData({
       ...uploadData,
-      file: e.target.files[0],
+      file: file,
     });
   };
 
@@ -45,7 +79,12 @@ const Documents = () => {
     e.preventDefault();
     
     if (!uploadData.file) {
-      setMessage({ type: 'error', text: 'Please select a file' });
+      setMessage({ type: 'error', text: 'Please select a file to upload' });
+      return;
+    }
+    
+    if (!uploadData.document_type) {
+      setMessage({ type: 'error', text: 'Please select a document type' });
       return;
     }
 
@@ -58,14 +97,22 @@ const Documents = () => {
 
     try {
       await documentAPI.upload(formData);
-      setMessage({ type: 'success', text: 'Document uploaded successfully!' });
+      setMessage({ type: 'success', text: '✓ Document uploaded successfully!' });
       setUploadData({ document_type: 'id_proof', file: null });
       document.getElementById('fileInput').value = '';
       fetchDocuments();
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setMessage({ type: '', text: '' });
+      }, 3000);
     } catch (error) {
+      const errorMsg = error.response?.data?.error || 
+                      error.response?.data?.details || 
+                      'Failed to upload document. Please try again.';
       setMessage({
         type: 'error',
-        text: error.response?.data?.error || 'Failed to upload document',
+        text: errorMsg,
       });
     } finally {
       setUploading(false);
@@ -73,24 +120,32 @@ const Documents = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this document?')) {
+    if (!window.confirm('Are you sure you want to delete this document? This action cannot be undone.')) {
       return;
     }
 
     try {
       await documentAPI.delete(id);
-      setMessage({ type: 'success', text: 'Document deleted successfully!' });
+      setMessage({ type: 'success', text: '✓ Document deleted successfully!' });
       fetchDocuments();
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setMessage({ type: '', text: '' });
+      }, 3000);
     } catch (error) {
+      const errorMsg = error.response?.data?.error || 
+                      'Failed to delete document. Please try again.';
       setMessage({
         type: 'error',
-        text: error.response?.data?.error || 'Failed to delete document',
+        text: errorMsg,
       });
     }
   };
 
   const handleDownload = async (id, name) => {
     try {
+      setMessage({ type: '', text: '' }); // Clear any previous messages
       const response = await documentAPI.download(id);
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -99,10 +154,18 @@ const Documents = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url); // Clean up
+      
+      setMessage({ type: 'success', text: '✓ Document downloaded successfully!' });
+      setTimeout(() => {
+        setMessage({ type: '', text: '' });
+      }, 2000);
     } catch (error) {
+      const errorMsg = error.response?.data?.error || 
+                      'Failed to download document. Please try again.';
       setMessage({
         type: 'error',
-        text: 'Failed to download document',
+        text: errorMsg,
       });
     }
   };

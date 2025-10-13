@@ -82,6 +82,19 @@ const Profile = () => {
     setSaving(true);
     setMessage({ type: '', text: '' });
 
+    // Validate required fields
+    if (!formData.first_name || !formData.first_name.trim()) {
+      setMessage({ type: 'error', text: 'First name is required' });
+      setSaving(false);
+      return;
+    }
+
+    if (!formData.last_name || !formData.last_name.trim()) {
+      setMessage({ type: 'error', text: 'Last name is required' });
+      setSaving(false);
+      return;
+    }
+
     // Validate GSTIN if provided
     const gstinError = validateGSTIN(formData.gstin);
     if (gstinError) {
@@ -90,14 +103,42 @@ const Profile = () => {
       return;
     }
 
+    // Validate phone number format if provided
+    if (formData.phone && formData.phone.trim()) {
+      const phonePattern = /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/;
+      if (!phonePattern.test(formData.phone)) {
+        setMessage({ type: 'error', text: 'Please enter a valid phone number' });
+        setSaving(false);
+        return;
+      }
+    }
+
+    // Validate zip code format if provided
+    if (formData.zip_code && formData.zip_code.trim()) {
+      const zipPattern = /^[0-9]{5,6}$/;
+      if (!zipPattern.test(formData.zip_code)) {
+        setMessage({ type: 'error', text: 'Please enter a valid zip code (5-6 digits)' });
+        setSaving(false);
+        return;
+      }
+    }
+
     try {
       const response = await customerAPI.updateProfile(formData);
       updateCustomer(response.data.customer);
-      setMessage({ type: 'success', text: 'Profile updated successfully!' });
+      setMessage({ type: 'success', text: '✓ Profile updated successfully!' });
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setMessage({ type: '', text: '' });
+      }, 3000);
     } catch (error) {
+      const errorMsg = error.response?.data?.error || 
+                      error.response?.data?.details?.[0]?.message ||
+                      'Failed to update profile. Please try again.';
       setMessage({
         type: 'error',
-        text: error.response?.data?.error || 'Failed to update profile',
+        text: errorMsg,
       });
     } finally {
       setSaving(false);
