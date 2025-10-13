@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+import pool from './../config/database.js';
 
 class Customer {
   static async create(userId, profileData) {
@@ -98,5 +98,5 @@ class Customer {
   }
 }
 
-module.exports = Customer;
+export default Customer;
 

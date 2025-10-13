@@ -1,8 +1,7 @@
-const Document = require('../models/Document.model');
-const Customer = require('../models/Customer.model');
-const OnboardingActivity = require('../models/OnboardingActivity.model');
-const fs = require('fs');
-const path = require('path');
+import Document from '../models/Document.model.js';
+import Customer from '../models/Customer.model.js';
+import OnboardingActivity from '../models/OnboardingActivity.model.js';
+import fs from 'fs';
 
 class DocumentController {
   async uploadDocument(req, res) {
@@ -211,5 +210,5 @@ class DocumentController {
   }
 }
 
-module.exports = new DocumentController();
+export default new DocumentController();
 

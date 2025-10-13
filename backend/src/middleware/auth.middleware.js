@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const jwtConfig = require('../config/jwt');
+import jwt from 'jsonwebtoken';
+import { secret as JWT_SECRET } from '../config/jwt.js';
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -10,7 +10,7 @@ const authenticateToken = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, jwtConfig.secret);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
@@ -27,8 +27,7 @@ const authorizeRole = (...roles) => {
   };
 };
 
-module.exports = {
+export {
   authenticateToken,
   authorizeRole,
 };
-

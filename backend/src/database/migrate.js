@@ -1,6 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-const pool = require('../config/database');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import pool from '../config/database.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function runMigrations() {
   try {
@@ -28,4 +32,3 @@ async function runMigrations() {
 }
 
 runMigrations();
-

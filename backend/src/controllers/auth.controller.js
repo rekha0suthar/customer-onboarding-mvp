@@ -1,8 +1,8 @@
-const User = require('../models/User.model');
-const Customer = require('../models/Customer.model');
-const OnboardingActivity = require('../models/OnboardingActivity.model');
-const { hashPassword, comparePassword } = require('../utils/password.util');
-const { generateToken } = require('../utils/jwt.util');
+import User from '../models/User.model.js';
+import Customer from '../models/Customer.model.js';
+import OnboardingActivity from '../models/OnboardingActivity.model.js';
+import { hashPassword, comparePassword } from '../utils/password.util.js';
+import { generateToken } from '../utils/jwt.util.js';
 
 class AuthController {
   async register(req, res) {
@@ -146,5 +146,5 @@ class AuthController {
   }
 }
 
-module.exports = new AuthController();
+export default new AuthController();
 

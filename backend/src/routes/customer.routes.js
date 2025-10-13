@@ -1,8 +1,8 @@
-const express = require('express');
-const { body } = require('express-validator');
-const customerController = require('../controllers/customer.controller');
-const validate = require('../middleware/validation.middleware');
-const { authenticateToken } = require('../middleware/auth.middleware');
+import express from 'express';
+import { body } from 'express-validator';
+import customerController from '../controllers/customer.controller.js';
+import validate from '../middleware/validation.middleware.js';
+import { authenticateToken } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
@@ -55,5 +55,4 @@ router.put(
 // Get customer activities
 router.get('/activities', customerController.getActivities);
 
-module.exports = router;
-
+export default router;

@@ -1,9 +1,9 @@
-const express = require('express');
-const { body } = require('express-validator');
-const documentController = require('../controllers/document.controller');
-const validate = require('../middleware/validation.middleware');
-const { authenticateToken } = require('../middleware/auth.middleware');
-const upload = require('../middleware/upload.middleware');
+import express from 'express';
+import { body } from 'express-validator';
+import documentController from '../controllers/document.controller.js';
+import validate from '../middleware/validation.middleware.js';
+import { authenticateToken } from '../middleware/auth.middleware.js';
+import upload from '../middleware/upload.middleware.js';
 
 const router = express.Router();
 
@@ -37,5 +37,4 @@ router.get('/:id/download', documentController.downloadDocument);
 // Delete document
 router.delete('/:id', documentController.deleteDocument);
 
-module.exports = router;
-
+export default router;

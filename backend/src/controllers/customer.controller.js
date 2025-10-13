@@ -1,5 +1,5 @@
-const Customer = require('../models/Customer.model');
-const OnboardingActivity = require('../models/OnboardingActivity.model');
+import Customer from '../models/Customer.model.js';
+import OnboardingActivity from '../models/OnboardingActivity.model.js';
 
 class CustomerController {
   async getProfile(req, res) {
@@ -149,4 +149,4 @@ class CustomerController {
   }
 }
 
-module.exports = new CustomerController();
+export default new CustomerController();

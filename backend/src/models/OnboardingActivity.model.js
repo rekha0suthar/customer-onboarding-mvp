@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+import pool from './../config/database.js';
 
 class OnboardingActivity {
   static async create(customerId, activityType, activityDescription) {
@@ -42,5 +42,5 @@ class OnboardingActivity {
   }
 }
 
-module.exports = OnboardingActivity;
+export default OnboardingActivity;
 

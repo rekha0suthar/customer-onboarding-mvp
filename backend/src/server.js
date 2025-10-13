@@ -1,10 +1,16 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -19,16 +25,20 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Customer Onboarding API is running' });
 });
 
-// API Routes with logging
-app.use('/api/auth', require('./routes/auth.routes'));
-app.use('/api/customers', require('./routes/customer.routes'));
-app.use('/api/documents', require('./routes/document.routes'));
-
-// Log all requests for debugging
+// Log all requests for debugging (before routes)
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
+
+// API Routes
+import authRoutes from './routes/auth.routes.js';
+import customerRoutes from './routes/customer.routes.js';
+import documentRoutes from './routes/document.routes.js';
+
+app.use('/api/auth', authRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/documents', documentRoutes);
 
 // 404 Handler
 app.use((req, res) => {
@@ -49,5 +59,4 @@ app.listen(PORT, () => {
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
-module.exports = app;
-
+export default app;

@@ -1,8 +1,8 @@
-const express = require('express');
-const { body } = require('express-validator');
-const authController = require('../controllers/auth.controller');
-const validate = require('../middleware/validation.middleware');
-const { authenticateToken } = require('../middleware/auth.middleware');
+import express from 'express';
+import { body } from 'express-validator';
+import authController from '../controllers/auth.controller.js';
+import validate from '../middleware/validation.middleware.js';
+import { authenticateToken } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
@@ -40,5 +40,4 @@ router.post(
 // Get current user profile
 router.get('/profile', authenticateToken, authController.getProfile);
 
-module.exports = router;
-
+export default router;
