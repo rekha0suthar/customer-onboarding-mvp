@@ -5,78 +5,90 @@ const Home = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            Welcome to Customer Onboarding
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20">
+        <div className="text-center mb-16 animate-fade-in">
+          <div className="inline-block mb-4 px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+            ✨ Trusted by 1000+ Businesses
+          </div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
+            Seamless Customer
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+              Onboarding Experience
+            </span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Streamline your customer onboarding process with our easy-to-use platform.
-            Get started in minutes!
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            Streamline your business verification process with our intelligent platform.
+            Complete KYC, upload documents, and get verified in minutes!
           </p>
         </div>
 
         {!user ? (
-          <div className="flex justify-center space-x-4 mb-16">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-20">
             <Link
               to="/register"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-medium shadow-lg hover:shadow-xl transition-all"
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 flex items-center justify-center"
             >
-              Get Started
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Get Started Free
             </Link>
             <Link
               to="/login"
-              className="bg-white hover:bg-gray-50 text-blue-600 px-8 py-3 rounded-lg text-lg font-medium shadow-lg hover:shadow-xl transition-all border-2 border-blue-600"
+              className="w-full sm:w-auto bg-white hover:bg-gray-50 text-gray-800 px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all border-2 border-gray-200 hover:border-blue-300 flex items-center justify-center"
             >
               Sign In
+              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </Link>
           </div>
         ) : (
-          <div className="flex justify-center mb-16">
+          <div className="flex justify-center mb-20">
             <Link
               to="/dashboard"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-medium shadow-lg hover:shadow-xl transition-all"
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1"
             >
-              Go to Dashboard
+              Go to Dashboard →
             </Link>
           </div>
         )}
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto mb-20">
+          <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 transform hover:-translate-y-2 border border-gray-100">
+            <div className="bg-gradient-to-br from-blue-100 to-blue-200 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md">
               <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Easy Registration</h3>
-            <p className="text-gray-600">
-              Create your account in seconds and start your onboarding journey
+            <h3 className="text-xl font-bold mb-3 text-gray-900">Quick Registration</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Create your account in under 2 minutes with GSTIN verification
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 transform hover:-translate-y-2 border border-gray-100">
+            <div className="bg-gradient-to-br from-green-100 to-green-200 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md">
               <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Document Upload</h3>
-            <p className="text-gray-600">
-              Securely upload and manage your verification documents
+            <h3 className="text-xl font-bold mb-3 text-gray-900">Secure Documents</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Bank-level encryption for all your uploaded verification documents
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all p-8 transform hover:-translate-y-2 border border-gray-100">
+            <div className="bg-gradient-to-br from-purple-100 to-purple-200 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md">
               <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold mb-2">Track Progress</h3>
-            <p className="text-gray-600">
-              Monitor your onboarding status and complete required steps
+            <h3 className="text-xl font-bold mb-3 text-gray-900">Real-time Tracking</h3>
+            <p className="text-gray-600 leading-relaxed">
+              Monitor verification status and get instant notifications
             </p>
           </div>
         </div>
