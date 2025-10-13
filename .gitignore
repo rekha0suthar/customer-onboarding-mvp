@@ -1,0 +1,19 @@
+node_modules/
+.env
+*.log
+.DS_Store
+coverage/
+dist/
+build/
+
+# Backend specific
+backend/node_modules/
+backend/.env
+backend/uploads/
+
+# Frontend specific (for future)
+frontend/node_modules/
+frontend/.env
+frontend/build/
+frontend/dist/
+
