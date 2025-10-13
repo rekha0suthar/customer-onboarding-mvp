@@ -1,91 +1,91 @@
-# Customer Onboarding MVP - Backend API
+# Customer Onboarding MVP
 
-A comprehensive backend API for customer onboarding with authentication, profile management, and document verification.
+A full-stack customer onboarding application with backend API and future frontend integration.
 
-## Features
+## Project Structure
 
-- User Authentication (Register/Login with JWT)
+```
+customer-onboarding-mvp/
+├── backend/          # Node.js + Express API
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── database/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── utils/
+│   │   └── server.js
+│   └── package.json
+└── README.md
+```
+
+## Backend API
+
+RESTful API for customer onboarding with:
+- User Authentication (JWT)
 - Customer Profile Management
 - Document Upload & Verification
 - Onboarding Status Tracking
-- RESTful API Architecture
 
-## Tech Stack
-
-- **Node.js** with Express.js
-- **PostgreSQL** for database
-- **JWT** for authentication
+### Tech Stack
+- **Node.js** + Express.js
+- **PostgreSQL** database
+- **JWT** authentication
 - **Multer** for file uploads
+- **bcryptjs** for password hashing
 
-## Setup Instructions
+### Quick Start
 
-### Prerequisites
+```bash
+cd backend
+npm install
+cp .env.example .env
+# Edit .env with your database credentials
+npm run migrate
+npm run dev
+```
 
-- Node.js (v16+)
-- PostgreSQL (v13+)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Create `.env` file from `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
-
-4. Update `.env` with your database credentials
-
-5. Create database:
-   ```sql
-   CREATE DATABASE customer_onboarding;
-   ```
-
-6. Run migrations:
-   ```bash
-   npm run migrate
-   ```
-
-7. Start the server:
-   ```bash
-   npm run dev
-   ```
+See [backend/README.md](backend/README.md) for detailed documentation.
 
 ## API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login user
+- `GET /api/auth/profile` - Get current user
 
 ### Customer Profile
 - `GET /api/customers/profile` - Get customer profile
 - `PUT /api/customers/profile` - Update customer profile
 - `GET /api/customers/status` - Get onboarding status
+- `PUT /api/customers/status` - Update onboarding step
+- `GET /api/customers/activities` - Get activity log
 
 ### Documents
 - `POST /api/documents/upload` - Upload document
-- `GET /api/documents` - Get all documents
+- `GET /api/documents` - List all documents
+- `GET /api/documents/:id` - Get specific document
+- `GET /api/documents/:id/download` - Download document
 - `DELETE /api/documents/:id` - Delete document
 
-## Project Structure
+## Database Schema
 
-```
-src/
-├── config/         # Configuration files
-├── controllers/    # Route controllers
-├── database/       # Database setup and migrations
-├── middleware/     # Custom middleware
-├── models/         # Data models
-├── routes/         # API routes
-├── utils/          # Utility functions
-└── server.js       # Entry point
-```
+- **users** - Authentication (email, password, role)
+- **customers** - Profile information (name, address, onboarding status)
+- **documents** - Uploaded files with verification status
+- **onboarding_activities** - Activity audit log
+
+## Features
+
+✅ User registration and authentication
+✅ JWT token-based security
+✅ Customer profile management
+✅ Document upload (PDF, JPG, PNG, DOC)
+✅ Onboarding step tracking
+✅ Activity logging
+✅ RESTful API design
 
 ## License
 
 ISC
-
