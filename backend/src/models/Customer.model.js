@@ -5,6 +5,7 @@ class Customer {
     const {
       first_name,
       last_name,
+      gstin = null,
       phone = null,
       date_of_birth = null,
       address = null,
@@ -16,15 +17,15 @@ class Customer {
 
     const query = `
       INSERT INTO customers (
-        user_id, first_name, last_name, phone, date_of_birth,
+        user_id, first_name, last_name, gstin, phone, date_of_birth,
         address, city, state, zip_code, country
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING *
     `;
     
     const result = await pool.query(query, [
-      userId, first_name, last_name, phone, date_of_birth,
+      userId, first_name, last_name, gstin, phone, date_of_birth,
       address, city, state, zip_code, country
     ]);
     

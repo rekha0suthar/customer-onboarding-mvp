@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS customers (
     user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
+    gstin VARCHAR(15) UNIQUE,
     phone VARCHAR(20),
     date_of_birth DATE,
     address TEXT,

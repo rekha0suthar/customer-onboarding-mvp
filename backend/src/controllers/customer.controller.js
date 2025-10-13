@@ -29,7 +29,7 @@ class CustomerController {
       }
 
       const allowedFields = [
-        'first_name', 'last_name', 'phone', 'date_of_birth',
+        'first_name', 'last_name', 'gstin', 'phone', 'date_of_birth',
         'address', 'city', 'state', 'zip_code', 'country'
       ];
 
@@ -40,9 +40,16 @@ class CustomerController {
         }
       });
 
-      const updatedCustomer = await Customer.update(customer.id, updateData);
+      let updatedCustomer;
+      try {
+        updatedCustomer = await Customer.update(customer.id, updateData);
+      } catch (updateError) {
+        if (updateError.code === '23505' && updateError.constraint === 'customers_gstin_key') {
+          return res.status(400).json({ error: 'GSTIN number already registered by another customer' });
+        }
+        throw updateError;
+      }
 
-      // Log activity
       await OnboardingActivity.create(
         customer.id,
         'PROFILE_UPDATE',
@@ -67,7 +74,6 @@ class CustomerController {
         return res.status(404).json({ error: 'Customer profile not found' });
       }
 
-      // Get recent activities
       const activities = await OnboardingActivity.findByCustomerId(customer.id, 10);
 
       res.json({
@@ -104,7 +110,6 @@ class CustomerController {
         step || customer.onboarding_step
       );
 
-      // Log activity
       await OnboardingActivity.create(
         customer.id,
         'STEP_COMPLETED',
@@ -145,4 +150,3 @@ class CustomerController {
 }
 
 module.exports = new CustomerController();
-

@@ -18,6 +18,13 @@ router.put(
   [
     body('first_name').optional().trim().notEmpty().withMessage('First name cannot be empty'),
     body('last_name').optional().trim().notEmpty().withMessage('Last name cannot be empty'),
+    body('gstin')
+      .optional()
+      .trim()
+      .isLength({ min: 15, max: 15 })
+      .withMessage('GSTIN must be 15 characters')
+      .matches(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/)
+      .withMessage('Invalid GSTIN format'),
     body('phone').optional().trim(),
     body('date_of_birth').optional().isISO8601().withMessage('Invalid date format'),
     body('address').optional().trim(),
