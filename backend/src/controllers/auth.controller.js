@@ -74,7 +74,7 @@ class AuthController {
 
       const user = await User.findByEmail(email);
       if (!user) {
-        return res.status(401).json({ error: 'Invalid email or password' });
+        return res.status(401).json({ error: 'User does not exist' });
       }
 
       const isValidPassword = await comparePassword(password, user.password_hash);

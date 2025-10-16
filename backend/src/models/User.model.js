@@ -1,7 +1,7 @@
 import pool from './../config/database.js';
 
 class User {
-  static async create(email, passwordHash, role = 'customer') {
+  static async create(email, passwordHash, role = 'broker') {
     const query = `
       INSERT INTO users (email, password_hash, role)
       VALUES ($1, $2, $3)
