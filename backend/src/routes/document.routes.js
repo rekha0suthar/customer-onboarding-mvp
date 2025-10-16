@@ -1,9 +1,9 @@
 import express from 'express';
-import { body } from 'express-validator';
 import documentController from '../controllers/document.controller.js';
 import validate from '../middleware/validation.middleware.js';
 import { requireAuth } from '../middleware/rbac.middleware.js';
 import upload from '../middleware/upload.middleware.js';
+import { uploadDocumentValidation } from '../validators/document.validators.js';
 
 const router = express.Router();
 
@@ -14,13 +14,7 @@ router.use(requireAuth);
 router.post(
   '/upload',
   upload.single('document'),
-  [
-    body('document_type')
-      .notEmpty()
-      .withMessage('Document type is required')
-      .isIn(['id_proof', 'address_proof', 'income_proof', 'photo', 'other'])
-      .withMessage('Invalid document type'),
-  ],
+  uploadDocumentValidation,
   validate,
   documentController.uploadDocument
 );
