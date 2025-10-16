@@ -36,13 +36,19 @@ class CustomerController {
       const updateData = {};
       allowedFields.forEach(field => {
         if (req.body[field] !== undefined) {
-          updateData[field] = req.body[field];
-        }
-      });
+      updateData[field] = req.body[field];
+      }
+    });
 
-      let updatedCustomer;
-      try {
-        updatedCustomer = await Customer.update(customer.id, updateData);
+    // Auto-update status to 'in_progress' when user starts onboarding
+    const isStartingOnboarding = customer.onboarding_status === 'pending' && Object.keys(updateData).length > 0;
+    if (isStartingOnboarding) {
+      updateData.onboarding_status = 'in_progress';
+    }
+
+    let updatedCustomer;
+    try {
+      updatedCustomer = await Customer.update(customer.id, updateData);
       } catch (updateError) {
         if (updateError.code === '23505' && updateError.constraint === 'customers_gstin_key') {
           return res.status(400).json({ error: 'GSTIN number already registered by another customer' });
@@ -50,11 +56,13 @@ class CustomerController {
         throw updateError;
       }
 
-      await OnboardingActivity.create(
-        customer.id,
-        'PROFILE_UPDATE',
-        'Customer updated profile information'
-      );
+    await OnboardingActivity.create(
+      customer.id,
+      'PROFILE_UPDATE',
+      isStartingOnboarding 
+        ? 'Customer started onboarding - status changed to in_progress'
+        : 'Customer updated profile information'
+    );
 
       res.json({
         message: 'Profile updated successfully',

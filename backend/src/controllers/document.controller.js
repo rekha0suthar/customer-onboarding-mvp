@@ -31,6 +31,16 @@ class DocumentController {
         mime_type: req.file.mimetype,
       });
 
+      // Auto-update status to 'in_progress' when user uploads first document
+      if (customer.onboarding_status === 'pending') {
+        await Customer.updateOnboardingStatus(customer.id, 'in_progress', 2);
+        await OnboardingActivity.create(
+          customer.id,
+          'STATUS_AUTO_UPDATE',
+          'Status changed to in_progress - started uploading documents'
+        );
+      }
+
       // Log activity
       await OnboardingActivity.create(
         customer.id,
