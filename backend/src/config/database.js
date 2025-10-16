@@ -9,9 +9,10 @@ const pool = new Pool({
   database: process.env.DB_NAME || 'customer_onboarding',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD,
-  max: 20,
-  idleTimeoutMillis: 80800,
-  connectionTimeoutMillis: 2000,
+  max: 1,
+  idleTimeoutMillis: 10000,
+  connectionTimeoutMillis: 10000,
+  ssl: process.env.DB_HOST?.includes('supabase.com') ? { rejectUnauthorized: false } : false,
 });
 
 pool.on('connect', () => {

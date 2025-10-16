@@ -5,7 +5,7 @@ class Document {
     const {
       document_type,
       document_name,
-      file_path,
+      file_content,
       file_size,
       mime_type,
     } = documentData;
@@ -13,29 +13,45 @@ class Document {
     const query = `
       INSERT INTO documents (
         customer_id, document_type, document_name, 
-        file_path, file_size, mime_type
+        file_content, file_size, mime_type
       )
       VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING *
+      RETURNING id, customer_id, document_type, document_name, 
+                file_size, mime_type, verification_status, 
+                uploaded_at, verified_at, notes
     `;
-    
+
     const result = await pool.query(query, [
       customerId, document_type, document_name,
-      file_path, file_size, mime_type
+      file_content, file_size, mime_type
     ]);
-    
+
     return result.rows[0];
   }
 
   static async findById(id) {
-    const query = 'SELECT * FROM documents WHERE id = $1';
+    const query = `
+      SELECT id, customer_id, document_type, document_name, 
+             file_size, mime_type, verification_status, 
+             uploaded_at, verified_at, notes
+      FROM documents WHERE id = $1
+    `;
     const result = await pool.query(query, [id]);
     return result.rows[0];
   }
 
+  static async getFileContent(id) {
+    const query = 'SELECT file_content FROM documents WHERE id = $1';
+    const result = await pool.query(query, [id]);
+    return result.rows[0]?.file_content;
+  }
+
   static async findByCustomerId(customerId) {
     const query = `
-      SELECT * FROM documents 
+      SELECT id, customer_id, document_type, document_name, 
+             file_size, mime_type, verification_status, 
+             uploaded_at, verified_at, notes
+      FROM documents 
       WHERE customer_id = $1 
       ORDER BY uploaded_at DESC
     `;

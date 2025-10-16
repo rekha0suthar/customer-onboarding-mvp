@@ -1,7 +1,6 @@
 import Document from '../models/Document.model.js';
 import Customer from '../models/Customer.model.js';
 import OnboardingActivity from '../models/OnboardingActivity.model.js';
-import fs from 'fs';
 
 class DocumentController {
   async uploadDocument(req, res) {
@@ -13,8 +12,6 @@ class DocumentController {
       const { document_type } = req.body;
 
       if (!document_type) {
-        // Clean up uploaded file
-        fs.unlinkSync(req.file.path);
         return res.status(400).json({ error: 'Document type is required' });
       }
 
@@ -22,8 +19,6 @@ class DocumentController {
       const customer = await Customer.findByUserId(req.user.userId);
       
       if (!customer) {
-        // Clean up uploaded file
-        fs.unlinkSync(req.file.path);
         return res.status(404).json({ error: 'Customer profile not found' });
       }
 
@@ -31,7 +26,7 @@ class DocumentController {
       const document = await Document.create(customer.id, {
         document_type,
         document_name: req.file.originalname,
-        file_path: req.file.path,
+        file_content: req.file.buffer, // Binary data from memory storage
         file_size: req.file.size,
         mime_type: req.file.mimetype,
       });
@@ -56,12 +51,6 @@ class DocumentController {
       });
     } catch (error) {
       console.error('Upload document error:', error);
-      
-      // Clean up file if it was uploaded
-      if (req.file && fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
-      }
-      
       res.status(500).json({ error: 'Failed to upload document', details: error.message });
     }
   }
@@ -149,12 +138,7 @@ class DocumentController {
         return res.status(403).json({ error: 'Access denied' });
       }
 
-      // Delete file from filesystem
-      if (fs.existsSync(document.file_path)) {
-        fs.unlinkSync(document.file_path);
-      }
-
-      // Delete from database
+      // Delete from database (file content is stored in DB)
       await Document.deleteById(id);
 
       // Log activity
@@ -189,20 +173,20 @@ class DocumentController {
         return res.status(403).json({ error: 'Access denied' });
       }
 
-      // Check if file exists
-      if (!fs.existsSync(document.file_path)) {
-        return res.status(404).json({ error: 'File not found on server' });
+      // Get file content from database
+      const fileContent = await Document.getFileContent(id);
+      
+      if (!fileContent) {
+        return res.status(404).json({ error: 'File content not found' });
       }
 
-      // Send file
-      res.download(document.file_path, document.document_name, (err) => {
-        if (err) {
-          console.error('Download error:', err);
-          if (!res.headersSent) {
-            res.status(500).json({ error: 'Failed to download file' });
-          }
-        }
-      });
+      // Set headers for file download
+      res.setHeader('Content-Type', document.mime_type);
+      res.setHeader('Content-Disposition', `attachment; filename="${document.document_name}"`);
+      res.setHeader('Content-Length', document.file_size);
+
+      // Send file content as buffer
+      res.send(fileContent);
     } catch (error) {
       console.error('Download document error:', error);
       res.status(500).json({ error: 'Failed to download document', details: error.message });
